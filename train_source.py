@@ -27,7 +27,7 @@ def train_epoch(epoch, model, source_dataset, optimizer, lr_scheduler, device, a
     for i in range(0, num_iter):
         data_source, label_source, _ = source_dataset.get_data()
         pred_s, fea_s = model.predict(data_source)
-        loss_enc = enp_fct(pred_s, label_source, device)  # + model.loss_im(pred_s)
+        loss_enc = enp_fct(pred_s, label_source, device)
         optimizer.zero_grad()
         loss_enc.backward()
         optimizer.step()
@@ -49,7 +49,7 @@ def train_model(args, model, train_loader, test_loader, folder_path, device, is_
     best_classes_accuries = np.zeros(args.num_classes)
     stop = 0
     correct = 0
-    # log path
+    
     model_path = f"{folder_path}/model_best.pkl"
     history_path = f"{folder_path}/history_best.npy"
     time_begin = tm.time()

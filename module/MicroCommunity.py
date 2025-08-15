@@ -64,7 +64,7 @@ class MicroCommunity(nn.Module):
         hot = F.one_hot(label, self.num_classes).float().to(device)
         out = self.LSM(hot)
         out = out + eps
-        column_sum = out.cumsum(dim=1)  # bs * 6
+        column_sum = out.cumsum(dim=1)  
         val = (beta.view(-1, 1) - column_sum) ** 2
         weights = torch.exp(-torch.sqrt(val + 1e-10))
         sum_weights = torch.sum(weights, dim=1, keepdim=True) + eps

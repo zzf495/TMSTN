@@ -31,7 +31,7 @@ def train_epoch(epoch, model, target_dataset, optimizer, optimizer_centers, lr_s
     model.classifier.eval()
     for k, v in model.classifier.named_parameters():
         v.requires_grad = False
-    num_iter = 20 # target_dataset.get_len()
+    num_iter = target_dataset.get_len()
     avg_list = []
     for i in range(0, num_iter):
         data_target, _, t_idx = target_dataset.get_data()
@@ -41,9 +41,9 @@ def train_epoch(epoch, model, target_dataset, optimizer, optimizer_centers, lr_s
         hot_matrix = (model.centers.hot_matrix @ model.centers.K).float().to(device)
         pos_t, neg_t, beta = model.age_cs(fea_t, centers, pred_t, hot_matrix, device=device)
         loss_enc = enp_fct(pred_t, t_label, device)
-        loss_im = InformationMaximization()(pred_t) # swap
-        loss_MSML, sum_v = model.centers.get_MSML_loss(fea_t, t_label, beta.detach())  # better fixed
-        loss_TSPE = triplet_loss(fea_t, pos_t, neg_t)  # 0.05 for Home, 0.1 for DomainNet
+        loss_im = InformationMaximization()(pred_t)
+        loss_MSML, sum_v = model.centers.get_MSML_loss(fea_t, t_label, beta.detach())
+        loss_TSPE = triplet_loss(fea_t, pos_t, neg_t)
         updated_t_label = torch.argmax(pred_t, dim=1).float().to(device)
         pseudo_label[t_idx] = updated_t_label
         # optimization
@@ -71,7 +71,6 @@ def train_model(args, model, train_loader, test_loader, folder_path, device, is_
     best_classes_accuries = np.zeros(args.num_classes)
     stop = 0
     correct = 0
-    # log path
     model_path = f"{folder_path}/model_best.pkl"
     history_path = f"{folder_path}/history_best.npy"
     time_begin = tm.time()
